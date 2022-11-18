@@ -71,6 +71,12 @@ async function checkPermission(uri, headers) {
     Key: { SiteAndGroupKey: groupName } }
   ).promise();
 
+  if (Item == null) {
+    // If the group rules are not found, log the error then deny access.
+    console.log('Failed to find the group rules in DynamoDB.');
+    return false;
+  }
+
   // Parse the rules.
   const { users } = JSON.parse(Item.rules);
 
