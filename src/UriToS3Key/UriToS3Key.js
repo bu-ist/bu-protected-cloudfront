@@ -2,6 +2,7 @@
 
 const { DynamoDB } = require('aws-sdk');
 const { imageSizeModifyRequest } = require('./imageResize/imageSizeModifyRequest');
+const { deniedResponse } = require('./authorizeRequest/deniedResponse');
 
 const UriToS3Key = async event => {
   const { request, request: { headers, querystring, uri } } = event.Records[0].cf
@@ -60,19 +61,5 @@ async function authorizeRequest(uri, headers) {
 
   return allowed;
 }
-
-// A static response to return for denied requests.
-const deniedResponse = {
-  body: 'Access denied',
-  bodyEncoding: 'text',
-  headers: {
-      'cache-control': [{
-          key: 'Cache-Control',
-          value: 'no-cache'
-       }],
-  },
-  status: '401',
-  statusDescription: 'Unauthorized'
-};
 
 module.exports = UriToS3Key
