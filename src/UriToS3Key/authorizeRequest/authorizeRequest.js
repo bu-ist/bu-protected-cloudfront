@@ -8,12 +8,6 @@ async function authorizeRequest(uri, headers) {
     return true;
   }
 
-  // Get the username from the headers.
-  let userName = '';
-  if ('x-bu-shib-username' in headers) {
-    userName = headers['x-bu-shib-username'][0].value;
-  }
-
   //const allowed = await checkPermissionFromAuthServer(uri, headers);
 
   // Get the group name from the uri, it is the segment after the "/__restricted/" segment.
@@ -34,12 +28,27 @@ async function authorizeRequest(uri, headers) {
   }
 
   // Parse the rules.
-  const { users } = JSON.parse(Item.rules);
+  const { users = [] } = JSON.parse(Item.rules);
 
   // Apply the rules.
-  const allowed = users.includes(userName);
+  const allowed = checkUserAccess(users, headers);
 
   return allowed;
 }
-  
+
+function checkUserAccess(users, headers) {
+  // Get the username from the headers.
+  let userName = '';
+  if ('x-bu-shib-username' in headers) {
+    userName = headers['x-bu-shib-username'][0].value;
+  }
+
+  // If the user is in the list of users or the list is empty, allow access
+  const userAllowed = users.length === 0 || users.includes(userName);
+
+  // TODO Add entitlement and status checks here next.
+  return userAllowed;
+}
+
+
 module.exports = { authorizeRequest };
