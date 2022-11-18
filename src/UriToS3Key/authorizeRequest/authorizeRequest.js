@@ -28,15 +28,15 @@ async function authorizeRequest(uri, headers) {
   }
 
   // Parse the rules.
-  const { users = [], states: affiliations = [] } = JSON.parse(Item.rules);
+  const { users = [], states: affiliations = [], entitlements = [] } = JSON.parse(Item.rules);
 
   // Apply the rules.
-  const allowed = checkUserAccess(users, affiliations, headers);
+  const allowed = checkUserAccess(users, affiliations, entitlements, headers);
 
   return allowed;
 }
 
-function checkUserAccess(users, affiliations, headers) {
+function checkUserAccess(users, affiliations, entitlements, headers) {
   // Get the username from the headers.
   let userName = '';
   if ('x-bu-shib-username' in headers) {
@@ -48,16 +48,23 @@ function checkUserAccess(users, affiliations, headers) {
     userAffiliation = headers['x-bu-shib-primary-affiliation'][0].value;
   }
 
+  let userEntitlements = [];
+  if ('x-bu-shib-entitlement' in headers) {
+    userEntitlements = headers['x-bu-shib-entitlement'][0].value.split(';');
+  }
+
   // If the user is in the list of users, allow access
   const userAllowed = users.includes(userName);
 
   // If the user is in the list of affiliations, allow access
   const affiliationAllowed = affiliations.includes(userAffiliation);
 
-  // TODO Add entitlement and status checks here next.
+  // Check entitlements.
+  const entitlementsIntersection = entitlements.filter(x => userEntitlements.includes(x));
+  const entitlementsAllowed = entitlementsIntersection.length > 0;
 
   // If the user is allowed by user list, status, or entitlement, allow return true to allow the request.
-  return userAllowed || affiliationAllowed;
+  return userAllowed || affiliationAllowed || entitlementsAllowed;
 }
 
 
