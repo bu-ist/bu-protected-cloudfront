@@ -1,6 +1,6 @@
 {
-  "name": "image-flex",
-  "version": "1.0.0",
+  "name": "bu-protected-cloudfront",
+  "version": "0.0.1",
   "description": "A robust, secure, and easily deployable image resizing service that scales, optimizes, and caches images on \"the edge,\" on the fly. Served by CloudFront via an Origin Access Identity. Executed on Lambda@Edge. Backed by S3. Protected by AWS WAF. Provisioned via CloudFormation. Built and deployed by the Serverless Application Model (SAM) CLI.",
   "scripts": {
     "setup": "bash -c './bin/setup.sh $npm_package_name $0 $1'",
