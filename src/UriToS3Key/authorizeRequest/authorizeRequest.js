@@ -28,26 +28,36 @@ async function authorizeRequest(uri, headers) {
   }
 
   // Parse the rules.
-  const { users = [] } = JSON.parse(Item.rules);
+  const { users = [], states: affiliations = [] } = JSON.parse(Item.rules);
 
   // Apply the rules.
-  const allowed = checkUserAccess(users, headers);
+  const allowed = checkUserAccess(users, affiliations, headers);
 
   return allowed;
 }
 
-function checkUserAccess(users, headers) {
+function checkUserAccess(users, affiliations, headers) {
   // Get the username from the headers.
   let userName = '';
   if ('x-bu-shib-username' in headers) {
     userName = headers['x-bu-shib-username'][0].value;
   }
 
-  // If the user is in the list of users or the list is empty, allow access
-  const userAllowed = users.length === 0 || users.includes(userName);
+  let userAffiliation = '';
+  if ('x-bu-shib-primary-affiliation' in headers) {
+    userAffiliation = headers['x-bu-shib-primary-affiliation'][0].value;
+  }
+
+  // If the user is in the list of users, allow access
+  const userAllowed = users.includes(userName);
+
+  // If the user is in the list of affiliations, allow access
+  const affiliationAllowed = affiliations.includes(userAffiliation);
 
   // TODO Add entitlement and status checks here next.
-  return userAllowed;
+
+  // If the user is allowed by user list, status, or entitlement, allow return true to allow the request.
+  return userAllowed || affiliationAllowed;
 }
 
 
