@@ -8,7 +8,7 @@ const UriToS3Key = async event => {
 
 
   // Apply access control.
-  const allowed = await checkPermission(uri, headers);
+  const allowed = await authorizeRequest(uri, headers);
   if (!allowed) {
     return deniedResponse;
   }
@@ -19,7 +19,7 @@ const UriToS3Key = async event => {
   return modifiedRequest;
 }
 
-async function checkPermission(uri, headers) {
+async function authorizeRequest(uri, headers) {
   const dynamoDb = new DynamoDB.DocumentClient();
 
   if  (!uri.includes('__restricted')) {
