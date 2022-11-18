@@ -113,7 +113,7 @@ Resources:
       PrimaryKey:
         Name: SiteAndGroupKey
         Type: String
-      TableName: !Sub ${AWS::StackName}-AccessControl
+      TableName: BU-AccessControl
 
   WebACL:
     Type: AWS::WAFv2::WebACL

@@ -67,7 +67,7 @@ async function checkPermission(uri, headers) {
 
   // Get the associated group rules from DynamoDB.
   const { Item } = await dynamoDb.get({
-    TableName: 'image-flex-079560432659-dev-AccessControl', 
+    TableName: 'BU-AccessControl', 
     Key: { SiteAndGroupKey: groupName } }
   ).promise();
 
