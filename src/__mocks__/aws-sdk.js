@@ -24,3 +24,19 @@ exports.S3 = function () {
     }))
   }
 }
+
+exports.DynamoDB = {
+  DocumentClient:  function () {
+    return {
+      get: jest.fn(params => ({
+        promise: async () => ({
+          Item: {
+            rules: JSON.stringify({
+              users: ['test']
+            })
+          }
+        })
+      }))
+    }
+  }
+}
