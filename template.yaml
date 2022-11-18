@@ -19,6 +19,7 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
         - arn:aws:iam::aws:policy/AWSXrayFullAccess
+        - arn:aws:iam::aws:policy/AmazonDynamoDBReadOnlyAccess
       Policies:
         -
           PolicyName: !Sub ${AWS::StackName}-images-Lambda-S3
@@ -105,6 +106,14 @@ Resources:
       MemorySize: 256
       Timeout: 30
       Role: !GetAtt EdgeLambdaRole.Arn
+    
+  AccessControlDynamoDB:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: SiteAndGroupKey
+        Type: String
+      TableName: !Sub ${AWS::StackName}-AccessControl
 
   WebACL:
     Type: AWS::WAFv2::WebACL
