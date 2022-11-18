@@ -14,6 +14,11 @@ async function authorizeRequest(uri, headers) {
   const pathSegments = uri.split('/');
   const groupName = pathSegments[pathSegments.indexOf('__restricted') + 1];
 
+  // Special handling for the entire-bu-community group, which only requires a valid BU login.
+  if (groupName === 'entire-bu-community') {
+    // This should be more elegant, but it checks for a non-empty shibboleth username header.
+    return ('x-bu-shib-username' in headers) && headers['x-bu-shib-username'][0].value !== '';
+  }
 
   // Get the associated group rules from DynamoDB.
   const { Item } = await dynamoDb.get({
